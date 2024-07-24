@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Photo Gallery</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* General body styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #222;
+            color: #ddd;
+            line-height: 1.6;
+            overflow: hidden; /* Hide overflow to prevent scrollbars */
+        }
+
+        /* Header styling */
+        header {
+            background: linear-gradient(135deg, #ff8a00, #e52e71);
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Main content styling */
+        main {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh; /* Full viewport height */
+        }
+
+        /* Gallery container styling */
+        .gallery-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+            overflow: hidden; /* Prevent horizontal scrolling */
+            padding-top: 1rem; /* Space from the top */
+        }
+
+        /* Gallery styling */
+        .gallery {
+            display: flex; /* Align items in a single line */
+            gap: 1rem;
+            flex-wrap: nowrap; /* Prevent wrapping of items */
+            max-width: 100%;
+            overflow: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Gallery item styling */
+        .gallery-item {
+            position: relative;
+            width: calc(100% / 6 - 1rem); /* Adjust number of images per row */
+            height: 200px; /* Fixed height for consistency */
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            background-color: #333; /* Background color for non-image areas */
+            transition: transform 0.3s, box-shadow 0.3s;
+            vertical-align: top; /* Align items to the top */
+        }
+
+        /* Image styling */
+        .gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer; /* Pointer cursor for clickable images */
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        /* Image hover effect */
+        .gallery-item:hover img {
+            transform: scale(1.1);
+            filter: brightness(70%);
+        }
+
+        /* Description box styling */
+        .description-box {
+            position: absolute;
+            bottom: -50px; /* Start position off-screen */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease, bottom 0.5s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        /* Show description box on hover */
+        .gallery-item:hover .description-box,
+        .gallery-item:focus-within .description-box {
+            opacity: 1;
+            visibility: visible;
+            bottom: 10px; /* Move to visible position */
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            z-index: 1000;
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Modal fade-in animation */
+        .modal.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Modal content styling */
+        #modalImage {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        #modalDescription {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        /* Overlay styling */
+        .modal::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Interactive Photo Gallery</h1>
+    </header>
+    <main>
+        <div class="gallery-container">
+            <div class="gallery">
+                <div class="gallery-item" data-description="Eren Jaeger, the protagonist of Attack on Titan. Known for his fierce determination and complex character development throughout the series.">
+                    <img src="images/ere.jpeg" alt="Eren Jaeger" tabindex="0">
+                    <div class="description-box"><p>Eren Jaeger, the protagonist of Attack on Titan. Known for his determination and character development.</p></div>
+                </div>
+                <div class="gallery-item" data-description="Gojo Satarou, a powerful sorcerer from Jujutsu Kaisen. Renowned for his exceptional combat skills and charismatic personality.">
+                    <img src="images/goj.jpeg" alt="Gojo Satarou" tabindex="0">
+                    <div class="description-box"><p>Gojo Satarou, a powerful sorcerer from Jujutsu Kaisen. Renowned for his exceptional combat skills and charismatic personality.</p></div>
+                </div>
+                <div class="gallery-item" data-description="Itachi Uchiha, a complex character from Naruto with a tragic backstory and unmatched skill in ninjutsu.">
+                    <img src="images/itit.jpg" alt="Itachi Uchiha" tabindex="0">
+                    <div class="description-box"><p>Itachi Uchiha, a complex character from Naruto with a tragic backstory and unmatched skill in ninjutsu.</p></div>
+                </div>
+                <div class="gallery-item" data-description="Monkey D. Luffy, the adventurous and determined protagonist of One Piece, known for his quest to find the One Piece treasure.">
+                    <img src="images/li.jpg" alt="Monkey D. Luffy" tabindex="0">
+                    <div class="description-box"><p>Monkey D. Luffy, the adventurous and determined protagonist of One Piece, known for his quest to find the One Piece treasure.</p></div>
+                </div>
+                <div class="gallery-item" data-description="Mikasa Ackerman, a skilled soldier from Attack on Titan, recognized for her extraordinary combat abilities and loyalty.">
+                    <img src="images/miki.jpg" alt="Mikasa Ackerman" tabindex="0">
+                    <div class="description-box"><p>Mikasa Ackerman, a skilled soldier from Attack on Titan, recognized for her extraordinary combat abilities and loyalty.</p></div>
+                </div>
+                <div class="gallery-item" data-description="Uzumaki Naruto, the energetic and spirited ninja from Naruto who dreams of becoming the strongest Hokage.">
+                    <img src="images/nar.jpg" alt="Uzumaki Naruto" tabindex="0">
+                    <div class="description-box"><p>Uzumaki Naruto, the energetic and spirited ninja from Naruto who dreams of becoming the strongest Hokage.</p></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for full image -->
+    <div id="imageModal" class="modal">
+        <img id="modalImage" src="" alt="Full Size Image">
+        <p id="modalDescription">Description will appear here.</p>
+    </div>
+
+    <script>
+        // Get the modal elements
+        const modal = document.getElementById('imageModal');
+        const
